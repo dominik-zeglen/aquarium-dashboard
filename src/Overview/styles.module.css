@@ -1,0 +1,51 @@
+.root {
+  background-color: rgba(253, 150, 68, 0.1);
+  padding: 40px 24px;
+}
+
+.wrapper {
+  margin: 0 auto;
+  width: 960px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 24px;
+  row-gap: 24px;
+}
+
+.colName {
+  width: 100%;
+  text-align: left;
+}
+.colValue {
+  text-align: right;
+  width: 50px;
+}
+
+.waste {
+  grid-column: span 2;
+}
+
+.species {
+  grid-column: span 2;
+  height: 400px;
+  overflow-y: scroll;
+}
+
+.speciesTable {
+  table-layout: fixed;
+}
+
+.colHerbivore,
+.colCarnivore,
+.colFunghi {
+  padding: 0 8px;
+  width: 50px;
+  text-align: right;
+}
+
+.speciesTable .colName {
+  width: 210px;
+}
