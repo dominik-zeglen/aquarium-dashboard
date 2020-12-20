@@ -40,7 +40,8 @@
 
 .colHerbivore,
 .colCarnivore,
-.colFunghi {
+.colFunghi,
+.colSpecimens {
   padding: 0 8px;
   width: 50px;
   text-align: right;

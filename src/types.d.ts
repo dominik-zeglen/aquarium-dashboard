@@ -1,5 +1,6 @@
 interface Species {
   id: number;
+  count: number;
   emergedAt: number;
   extinct: boolean;
   herbivore: number;

@@ -25,9 +25,7 @@ const App: React.FC = () => {
             },
           },
         ];
-        return newData.length > 60 * 60
-          ? newData.slice(1, 60 * 60 + 1)
-          : newData;
+        return newData.length > 60 * 60 ? newData.slice(1) : newData;
       });
     }, 1000) as unknown) as number;
 

@@ -200,6 +200,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                 <col className={classes.colHerbivore} />
                 <col className={classes.colCarnivore} />
                 <col className={classes.colFunghi} />
+                <col className={classes.colSpecimens} />
               </colgroup>
               <thead>
                 <tr>
@@ -207,6 +208,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                   <th className={classes.colHerbivore}>Herbivore</th>
                   <th className={classes.colCarnivore}>Funghi</th>
                   <th className={classes.colFunghi}>Carnivore</th>
+                  <th className={classes.colSpecimens}>Specimens</th>
                 </tr>
               </thead>
               <tbody>
@@ -218,6 +220,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                     </td>
                     <td className={classes.colCarnivore}>{species.funghi}</td>
                     <td className={classes.colFunghi}>{species.carnivore}</td>
+                    <td className={classes.colFunghi}>{species.count}</td>
                   </tr>
                 ))}
               </tbody>
