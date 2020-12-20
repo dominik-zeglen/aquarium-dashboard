@@ -3,6 +3,7 @@ import React from "react";
 import Card from "../Card/Card";
 import clsx from "clsx";
 import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
+import uniqBy from "lodash/uniqBy";
 
 export interface OverviewProps {
   data: APIData;
@@ -271,7 +272,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                 </tr>
               </thead>
               <tbody>
-                {[...data.procreation.species]
+                {uniqBy(data.procreation.species, "id")
                   .sort(sortSpecies)
                   .map((species) => (
                     <tr key={species.id}>
