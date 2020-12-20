@@ -47,6 +47,10 @@
   text-align: right;
 }
 
+.colHeader {
+  cursor: pointer;
+}
+
 .speciesTable .colName {
   width: 210px;
 }

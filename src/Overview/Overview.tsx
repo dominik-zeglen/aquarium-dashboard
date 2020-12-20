@@ -1,6 +1,7 @@
 import classes from "./styles.module.css";
 import React from "react";
 import Card from "../Card/Card";
+import clsx from "clsx";
 import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
 
 export interface OverviewProps {
@@ -8,8 +9,18 @@ export interface OverviewProps {
   sequence: APIDataSequence[];
 }
 
+interface SortBy {
+  asc: boolean;
+  col: keyof Species;
+}
+
 const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
-  const [resolution, setResolution] = React.useState(2);
+  const [resolution, setResolution] = React.useState(1);
+  const [sortBy, setSortBy] = React.useState<SortBy>({
+    asc: true,
+    col: "id",
+  });
+
   const lastSeconds = 60 * resolution;
 
   const herbivores = data?.procreation.species.reduce(
@@ -30,9 +41,32 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
     .reverse()
     .filter((_, index) => index % resolution === 0);
   const chartData: APIDataSequence[] =
-    trimmedSequence.length < lastSeconds
+    trimmedSequence.length < lastSeconds / resolution
       ? [...Array(lastSeconds - trimmedSequence.length), ...trimmedSequence]
       : trimmedSequence;
+
+  const sortSpecies = (a: Species, b: Species) => {
+    const result = a[sortBy.col] > b[sortBy.col] ? 1 : -1;
+    if (!sortBy.asc) {
+      return -result;
+    }
+
+    return result;
+  };
+
+  const handleSort = (sort: keyof Species) => {
+    if (sortBy.col === sort) {
+      setSortBy((prev) => ({
+        ...prev,
+        asc: !prev.asc,
+      }));
+    } else {
+      setSortBy({
+        asc: true,
+        col: sort,
+      });
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -204,25 +238,52 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               </colgroup>
               <thead>
                 <tr>
-                  <th className={classes.colName}>ID</th>
-                  <th className={classes.colHerbivore}>Herbivore</th>
-                  <th className={classes.colCarnivore}>Funghi</th>
-                  <th className={classes.colFunghi}>Carnivore</th>
-                  <th className={classes.colSpecimens}>Specimens</th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colName)}
+                    onClick={() => handleSort("id")}
+                  >
+                    ID
+                  </th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colHerbivore)}
+                    onClick={() => handleSort("herbivore")}
+                  >
+                    Herbivore
+                  </th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colCarnivore)}
+                    onClick={() => handleSort("carnivore")}
+                  >
+                    Funghi
+                  </th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colFunghi)}
+                    onClick={() => handleSort("funghi")}
+                  >
+                    Carnivore
+                  </th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colSpecimens)}
+                    onClick={() => handleSort("count")}
+                  >
+                    Specimens
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {data.procreation.species.map((species) => (
-                  <tr>
-                    <td className={classes.colName}>{species.id}</td>
-                    <td className={classes.colHerbivore}>
-                      {species.herbivore}
-                    </td>
-                    <td className={classes.colCarnivore}>{species.funghi}</td>
-                    <td className={classes.colFunghi}>{species.carnivore}</td>
-                    <td className={classes.colFunghi}>{species.count}</td>
-                  </tr>
-                ))}
+                {[...data.procreation.species]
+                  .sort(sortSpecies)
+                  .map((species) => (
+                    <tr key={species.id}>
+                      <td className={classes.colName}>{species.id}</td>
+                      <td className={classes.colHerbivore}>
+                        {species.herbivore}
+                      </td>
+                      <td className={classes.colCarnivore}>{species.funghi}</td>
+                      <td className={classes.colFunghi}>{species.carnivore}</td>
+                      <td className={classes.colFunghi}>{species.count}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </Card>
