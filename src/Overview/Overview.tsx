@@ -240,31 +240,41 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               <thead>
                 <tr>
                   <th
-                    className={clsx(classes.colHeader, classes.colName)}
+                    className={clsx(classes.colHeader, classes.colName, {
+                      [classes.colActive]: sortBy.col === "id",
+                    })}
                     onClick={() => handleSort("id")}
                   >
                     ID
                   </th>
                   <th
-                    className={clsx(classes.colHeader, classes.colHerbivore)}
+                    className={clsx(classes.colHeader, classes.colHerbivore, {
+                      [classes.colActive]: sortBy.col === "herbivore",
+                    })}
                     onClick={() => handleSort("herbivore")}
                   >
                     Herbivore
                   </th>
                   <th
-                    className={clsx(classes.colHeader, classes.colCarnivore)}
+                    className={clsx(classes.colHeader, classes.colCarnivore, {
+                      [classes.colActive]: sortBy.col === "carnivore",
+                    })}
                     onClick={() => handleSort("carnivore")}
-                  >
-                    Funghi
-                  </th>
-                  <th
-                    className={clsx(classes.colHeader, classes.colFunghi)}
-                    onClick={() => handleSort("funghi")}
                   >
                     Carnivore
                   </th>
                   <th
-                    className={clsx(classes.colHeader, classes.colSpecimens)}
+                    className={clsx(classes.colHeader, classes.colFunghi, {
+                      [classes.colActive]: sortBy.col === "funghi",
+                    })}
+                    onClick={() => handleSort("funghi")}
+                  >
+                    Funghi
+                  </th>
+                  <th
+                    className={clsx(classes.colHeader, classes.colSpecimens, {
+                      [classes.colActive]: sortBy.col === "count",
+                    })}
                     onClick={() => handleSort("count")}
                   >
                     Specimens
@@ -280,9 +290,11 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                       <td className={classes.colHerbivore}>
                         {species.herbivore}
                       </td>
-                      <td className={classes.colCarnivore}>{species.funghi}</td>
-                      <td className={classes.colFunghi}>{species.carnivore}</td>
-                      <td className={classes.colFunghi}>{species.count}</td>
+                      <td className={classes.colCarnivore}>
+                        {species.carnivore}
+                      </td>
+                      <td className={classes.colFunghi}>{species.funghi}</td>
+                      <td className={classes.colSpecimens}>{species.count}</td>
                     </tr>
                   ))}
               </tbody>

@@ -54,3 +54,7 @@
 .speciesTable .colName {
   width: 210px;
 }
+
+.colActive {
+  color: rgba(136, 84, 208, 1);
+}
