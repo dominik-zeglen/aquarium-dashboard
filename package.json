@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.6",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
@@ -12,6 +13,7 @@
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
     "clsx": "^1.1.1",
+    "graphql": "^15.4.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
@@ -22,6 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build-types": "apollo client:codegen --target=typescript gqlTypes",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -44,6 +47,7 @@
     ]
   },
   "devDependencies": {
-    "@types/recharts": "^1.8.18"
+    "@types/recharts": "^1.8.18",
+    "apollo": "^2.32.0"
   }
 }

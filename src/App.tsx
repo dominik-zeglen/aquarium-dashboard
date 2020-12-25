@@ -1,43 +1,89 @@
 import React from "react";
-import { API_URL } from "./env";
 import styles from "./App.module.css";
 import Env from "./Env/Env";
 import Overview from "./Overview/Overview";
+import { useApolloClient } from "@apollo/client/react";
+import { gql } from "@apollo/client/core";
+import {
+  GetData,
+  GetData_iteration,
+  GetData_iteration_procreation,
+} from "./gqlTypes/GetData";
 
+const query = gql`
+  query GetData {
+    iteration {
+      number
+      aliveCellCount
+      number
+      procreation {
+        maxHeight
+        minHeight
+        species {
+          count
+          edges {
+            node {
+              carnivore
+              funghi
+              herbivore
+              id
+              cells {
+                count
+              }
+            }
+          }
+        }
+      }
+      waste {
+        maxTolerance
+        minTolerance
+        toxicity
+      }
+    }
+  }
+`;
+
+export interface APIDataSequence
+  extends Omit<GetData_iteration, "procreation"> {
+  procreation: Omit<GetData_iteration_procreation, "species">;
+}
 const App: React.FC = () => {
   const apiInterval = React.useRef<number | null>(null);
-  const [data, setData] = React.useState<APIData>();
+  const [data, setData] = React.useState<GetData>();
   const [dataSequence, setDataSequence] = React.useState<APIDataSequence[]>([]);
+  const client = useApolloClient();
 
   React.useEffect(() => {
     apiInterval.current = (setInterval(async () => {
-      const response = await fetch(API_URL);
-      const responseData: APIData = await response.json();
-      setData(responseData);
+      const response = await client.query<GetData>({
+        query,
+        fetchPolicy: "no-cache",
+      });
+      setData(response.data);
       setDataSequence((prev) => {
         const newData = [
           ...prev,
           {
-            ...responseData,
+            ...response.data.iteration,
             procreation: {
-              ...responseData.procreation,
+              ...response.data.iteration.procreation,
               species: undefined,
             },
           },
         ];
-        return newData.length > 60 * 60 ? newData.slice(1) : newData;
+        return newData.length > (60 * 60) / 5 ? newData.slice(1) : newData;
       });
-    }, 1000) as unknown) as number;
+    }, 5000) as unknown) as number;
 
     return () => clearInterval(apiInterval.current as number);
-  }, []);
+  }, [client]);
 
   return (
     <div className={styles.root}>
       {data && dataSequence.length > 0 && (
         <>
-          <Env data={data} />
-          <Overview data={data} sequence={dataSequence} />
+          <Env data={data?.iteration} />
+          <Overview data={data?.iteration} sequence={dataSequence} />
         </>
       )}
     </div>

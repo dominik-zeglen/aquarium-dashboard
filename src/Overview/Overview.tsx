@@ -4,15 +4,21 @@ import Card from "../Card/Card";
 import clsx from "clsx";
 import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
 import uniqBy from "lodash/uniqBy";
+import {
+  GetData_iteration,
+  GetData_iteration_procreation_species_edges,
+  GetData_iteration_procreation_species_edges_node,
+} from "../gqlTypes/GetData";
+import { APIDataSequence } from "../App";
 
 export interface OverviewProps {
-  data: APIData;
+  data: GetData_iteration;
   sequence: APIDataSequence[];
 }
 
 interface SortBy {
   asc: boolean;
-  col: keyof Species;
+  col: keyof GetData_iteration_procreation_species_edges_node;
 }
 
 const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
@@ -24,16 +30,16 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
 
   const lastSeconds = 60 * resolution;
 
-  const herbivores = data?.procreation.species.reduce(
-    (acc, species) => (species.herbivore > 8 ? acc + 1 : acc),
+  const herbivores = data?.procreation.species.edges.reduce(
+    (acc, species) => (species.node.herbivore > 8 ? acc + 1 : acc),
     0
   );
-  const carnivores = data?.procreation.species.reduce(
-    (acc, species) => (species.carnivore > 8 ? acc + 1 : acc),
+  const carnivores = data?.procreation.species.edges.reduce(
+    (acc, species) => (species.node.carnivore > 8 ? acc + 1 : acc),
     0
   );
-  const funghi = data?.procreation.species.reduce(
-    (acc, species) => (species.funghi > 8 ? acc + 1 : acc),
+  const funghi = data?.procreation.species.edges.reduce(
+    (acc, species) => (species.node.funghi > 8 ? acc + 1 : acc),
     0
   );
   const trimmedSequence = [...sequence]
@@ -46,8 +52,16 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
       ? [...Array(lastSeconds - trimmedSequence.length), ...trimmedSequence]
       : trimmedSequence;
 
-  const sortSpecies = (a: Species, b: Species) => {
-    const result = a[sortBy.col] > b[sortBy.col] ? 1 : -1;
+  const sortSpecies = (
+    a: GetData_iteration_procreation_species_edges,
+    b: GetData_iteration_procreation_species_edges
+  ) => {
+    let result = 1;
+    if (sortBy.col === "cells") {
+      result = a.node.cells.count > b.node.cells.count ? 1 : -1;
+    } else {
+      result = a.node[sortBy.col] > b.node[sortBy.col] ? 1 : -1;
+    }
     if (!sortBy.asc) {
       return -result;
     }
@@ -55,7 +69,9 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
     return result;
   };
 
-  const handleSort = (sort: keyof Species) => {
+  const handleSort = (
+    sort: keyof GetData_iteration_procreation_species_edges_node
+  ) => {
     if (sortBy.col === sort) {
       setSortBy((prev) => ({
         ...prev,
@@ -100,13 +116,11 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                   setResolution(parseInt(event.target.value, 0))
                 }
               >
-                <option value={1}>1 Minute</option>
-                <option value={2}>2 Minutes</option>
-                <option value={5}>5 Minutes</option>
-                <option value={10}>10 Minutes</option>
-                <option value={15}>15 Minutes</option>
-                <option value={30}>30 Minutes</option>
-                <option value={60}>1 Hour</option>
+                <option value={1}>5 Minutes</option>
+                <option value={2}>10 Minutes</option>
+                <option value={3}>15 Minutes</option>
+                <option value={6}>30 Minutes</option>
+                <option value={12}>1 Hour</option>
               </select>
             </Card>
           </div>
@@ -118,8 +132,8 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               width={450}
               height={300}
               data={chartData.map((s) => ({
-                x: s?.iteration,
-                waste: s?.waste.waste,
+                x: s?.number,
+                waste: s?.waste.toxicity,
               }))}
               margin={{
                 top: 5,
@@ -153,7 +167,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                 <tr>
                   <td>All</td>
                   <td className={classes.colValue}>
-                    {data.procreation.species.length}
+                    {data.procreation.species.count}
                   </td>
                 </tr>
               </table>
@@ -164,7 +178,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               width={450}
               height={300}
               data={chartData.map((s) => ({
-                x: s?.iteration,
+                x: s?.number,
                 cells: s?.aliveCellCount,
               }))}
               margin={{
@@ -194,7 +208,7 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               width={450}
               height={300}
               data={chartData.map((s) => ({
-                x: s?.iteration,
+                x: s?.number,
                 maxHeight: s?.procreation.maxHeight,
                 minHeight: s?.procreation.minHeight,
               }))}
@@ -273,33 +287,42 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
                   </th>
                   <th
                     className={clsx(classes.colHeader, classes.colSpecimens, {
-                      [classes.colActive]: sortBy.col === "count",
+                      [classes.colActive]: sortBy.col === "cells",
                     })}
-                    onClick={() => handleSort("count")}
+                    onClick={() => handleSort("cells")}
                   >
                     Specimens
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {uniqBy(data.procreation.species, "id")
+                {uniqBy(data.procreation.species.edges, "node.id")
                   .sort(sortSpecies)
                   .map((species) => (
-                    <tr key={species.id}>
-                      <td className={classes.colName}>{species.id}</td>
+                    <tr key={species.node.id}>
+                      <td className={classes.colName}>{species.node.id}</td>
                       <td className={classes.colHerbivore}>
-                        {species.herbivore}
+                        {species.node.herbivore}
                       </td>
                       <td className={classes.colCarnivore}>
-                        {species.carnivore}
+                        {species.node.carnivore}
                       </td>
-                      <td className={classes.colFunghi}>{species.funghi}</td>
-                      <td className={classes.colSpecimens}>{species.count}</td>
+                      <td className={classes.colFunghi}>
+                        {species.node.funghi}
+                      </td>
+                      <td className={classes.colSpecimens}>
+                        {species.node.cells.count}
+                      </td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </Card>
+          {/* <div />
+          <div />
+          <Card header="Species" className={classes.species}>
+              
+          </Card> */}
         </div>
       </div>
     </div>

@@ -1,0 +1,90 @@
+input PointInput {
+  x: Float!
+  y: Float!
+}
+
+type Point {
+  x: Float!
+  y: Float!
+}
+
+type IterationProcreation {
+  canProcreate: Boolean!
+  maxCd: Int!
+  maxHeight: Float!
+  minCd: Int!
+  minHeight: Float!
+  species: SpeciesConnection!
+}
+
+type IterationWaste {
+  maxTolerance: Float!
+  minTolerance: Float!
+  toxicity: Float!
+}
+
+type Iteration {
+  aliveCellCount: Int!
+  cellCount: Int!
+  number: Int!
+  procreation: IterationProcreation!
+  waste: IterationWaste!
+}
+
+type SpeciesConnection {
+  count: Int!
+  edges: [SpeciesConnectionEdge!]!
+}
+
+type SpeciesConnectionEdge {
+  node: Species!
+}
+
+type Species {
+  id: Int!
+  carnivore: Int!
+  cells: CellConnection!
+  consumption: Int!
+  diet: [String!]!
+  emergedAt: Int!
+  funghi: Int!
+  herbivore: Int!
+  name: String!
+}
+
+type CellConnection {
+  count: Int!
+  edges: [CellConnectionEdge!]!
+}
+
+type CellConnectionEdge {
+  node: Cell!
+}
+
+type Cell {
+  id: Int!
+  alive: Boolean!
+  bornAt: Int!
+  capacity: Int!
+  food: Int!
+  hp: Int!
+  position: Point!
+  satiation: Int!
+  species: Species!
+}
+
+type Query {
+  area(start: PointInput!, end: PointInput!): [Cell!]!
+
+  cell(id: Int!): Cell
+  cellList: CellConnection!
+
+  species(id: Int!): Species
+  speciesList: SpeciesConnection!
+
+  iteration: Iteration!
+}
+
+schema {
+  query: Query
+}
