@@ -7,6 +7,17 @@
 // START Enums and Input Objects
 //==============================================================
 
+export interface AreaInput {
+  start: PointInput;
+  end: PointInput;
+  scale?: number | null;
+}
+
+export interface PointInput {
+  x: number;
+  y: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

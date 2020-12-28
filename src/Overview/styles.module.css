@@ -25,11 +25,11 @@
 }
 
 .waste {
-  grid-column: span 2;
+  grid-column: span 3;
 }
 
 .species {
-  grid-column: span 2;
+  grid-column: span 3;
   height: 400px;
   overflow-y: scroll;
 }
@@ -57,4 +57,13 @@
 
 .colActive {
   color: rgba(136, 84, 208, 1);
+}
+
+.map {
+  grid-column: span 3;
+}
+
+.mapCanvas {
+  display: block;
+  margin: 0 auto;
 }

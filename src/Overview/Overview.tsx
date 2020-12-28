@@ -10,10 +10,17 @@ import {
   GetData_iteration_procreation_species_edges_node,
 } from "../gqlTypes/GetData";
 import { APIDataSequence } from "../App";
+import { Area_cellList_edges_node, Area_speciesGrid } from "../gqlTypes/Area";
+import Map from "./Map";
+import { AreaInput } from "../../gqlTypes/globalTypes";
 
 export interface OverviewProps {
+  area: Area_cellList_edges_node[];
+  grid: Area_speciesGrid[];
   data: GetData_iteration;
   sequence: APIDataSequence[];
+  selectedArea: AreaInput;
+  setSelectedArea: (area: AreaInput) => void;
 }
 
 interface SortBy {
@@ -21,7 +28,14 @@ interface SortBy {
   col: keyof GetData_iteration_procreation_species_edges_node;
 }
 
-const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
+const Overview: React.FC<OverviewProps> = ({
+  area,
+  grid,
+  data,
+  sequence,
+  selectedArea,
+  setSelectedArea,
+}) => {
   const [resolution, setResolution] = React.useState(1);
   const [sortBy, setSortBy] = React.useState<SortBy>({
     asc: true,
@@ -156,7 +170,6 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               />
             </LineChart>
           </Card>
-          <div />
           <div>
             <Card header="Species">
               <table>
@@ -202,7 +215,6 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
             </LineChart>
           </Card>
           <div />
-          <div />
           <Card className={classes.waste} header="Depth">
             <LineChart
               width={450}
@@ -240,7 +252,6 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               />
             </LineChart>
           </Card>
-          <div />
           <div />
           <Card header="Species" className={classes.species}>
             <table className={classes.speciesTable}>
@@ -318,11 +329,16 @@ const Overview: React.FC<OverviewProps> = ({ data, sequence }) => {
               </tbody>
             </table>
           </Card>
-          {/* <div />
           <div />
-          <Card header="Species" className={classes.species}>
-              
-          </Card> */}
+          <Card header="Map" className={classes.map}>
+            <Map
+              area={area}
+              grid={grid}
+              selectedArea={selectedArea}
+              setSelectedArea={setSelectedArea}
+              species={data.procreation.species.edges.map((edge) => edge.node)}
+            />
+          </Card>
         </div>
       </div>
     </div>
