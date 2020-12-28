@@ -53,7 +53,7 @@ const Map: React.FC<MapProps> = ({
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(400, 400, 100, 100);
     ctx.fillStyle = "#000000";
-    ctx.strokeStyle = "#8a8a8a";
+    ctx.strokeStyle = "#333333";
     ctx.beginPath();
     ctx.rect(400, 400, 99, 99);
     ctx.stroke();
@@ -72,7 +72,7 @@ const Map: React.FC<MapProps> = ({
       ctx.fillRect(400 + block.position.x, 400 + block.position.y, 1, 1);
     });
 
-    ctx.strokeStyle = "#c7c7c7";
+    ctx.strokeStyle = "#333333";
     ctx.beginPath();
     ctx.rect(
       selectedArea.start.x / 100 + 400,

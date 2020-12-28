@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { AreaInput } from "./../../gqlTypes/globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetData
 // ====================================================
@@ -54,6 +56,56 @@ export interface GetData_iteration {
   waste: GetData_iteration_waste;
 }
 
+export interface GetData_speciesGrid_position {
+  __typename: "Point";
+  x: number;
+  y: number;
+}
+
+export interface GetData_speciesGrid_species {
+  __typename: "Species";
+  id: number;
+}
+
+export interface GetData_speciesGrid {
+  __typename: "SpeciesGridElement";
+  position: GetData_speciesGrid_position;
+  species: GetData_speciesGrid_species[];
+}
+
+export interface GetData_cellList_edges_node_position {
+  __typename: "Point";
+  x: number;
+  y: number;
+}
+
+export interface GetData_cellList_edges_node_species {
+  __typename: "Species";
+  id: number;
+}
+
+export interface GetData_cellList_edges_node {
+  __typename: "Cell";
+  position: GetData_cellList_edges_node_position;
+  species: GetData_cellList_edges_node_species;
+}
+
+export interface GetData_cellList_edges {
+  __typename: "CellConnectionEdge";
+  node: GetData_cellList_edges_node;
+}
+
+export interface GetData_cellList {
+  __typename: "CellConnection";
+  edges: GetData_cellList_edges[];
+}
+
 export interface GetData {
   iteration: GetData_iteration;
+  speciesGrid: GetData_speciesGrid[];
+  cellList: GetData_cellList;
+}
+
+export interface GetDataVariables {
+  area: AreaInput;
 }
