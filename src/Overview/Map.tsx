@@ -90,7 +90,7 @@ const Map: React.FC<MapProps> = ({
           (s) => s.id === organism.species.id
         );
         const cellType = organismSpecies?.cellTypes.find(
-          (ct) => ct.id == cell.type.id
+          (ct) => ct.id === cell.type.id
         );
         ctx.strokeStyle = cellType
           ? getColorFromHex(getPixelColorHex(cellType.diet))
