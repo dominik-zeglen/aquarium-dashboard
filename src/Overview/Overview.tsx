@@ -1,31 +1,20 @@
 import classes from "./styles.module.css";
 import React from "react";
 import Card from "../Card/Card";
-import clsx from "clsx";
 import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
-import uniqBy from "lodash/uniqBy";
-import {
-  GetData_iteration,
-  GetData_iteration_procreation_species_edges,
-  GetData_iteration_procreation_species_edges_node,
-} from "../gqlTypes/GetData";
+import { GetData_iteration, GetData_organismList } from "../gqlTypes/GetData";
 import { APIDataSequence } from "../App";
-import { Area_cellList_edges_node, Area_speciesGrid } from "../gqlTypes/Area";
+import { Area_speciesGrid } from "../gqlTypes/Area";
 import Map from "./Map";
 import { AreaInput } from "../../gqlTypes/globalTypes";
 
 export interface OverviewProps {
-  area: Area_cellList_edges_node[];
+  area: GetData_organismList[];
   grid: Area_speciesGrid[];
   data: GetData_iteration;
   sequence: APIDataSequence[];
   selectedArea: AreaInput;
   setSelectedArea: (area: AreaInput) => void;
-}
-
-interface SortBy {
-  asc: boolean;
-  col: keyof GetData_iteration_procreation_species_edges_node;
 }
 
 const Overview: React.FC<OverviewProps> = ({
@@ -37,23 +26,16 @@ const Overview: React.FC<OverviewProps> = ({
   setSelectedArea,
 }) => {
   const [resolution, setResolution] = React.useState(1);
-  const [sortBy, setSortBy] = React.useState<SortBy>({
-    asc: true,
-    col: "id",
-  });
 
   const lastSeconds = 60 * resolution;
 
-  const herbivores = data?.procreation.species.edges.reduce(
-    (acc, species) => (species.node.herbivore > 8 ? acc + 1 : acc),
+  const herbivores = data?.procreation.species.reduce(
+    (acc, species) => (species.diet.includes("herbivore") ? acc + 1 : acc),
     0
   );
-  const carnivores = data?.procreation.species.edges.reduce(
-    (acc, species) => (species.node.carnivore > 8 ? acc + 1 : acc),
-    0
-  );
-  const funghi = data?.procreation.species.edges.reduce(
-    (acc, species) => (species.node.funghi > 8 ? acc + 1 : acc),
+  const carnivores = 0;
+  const funghi = data?.procreation.species.reduce(
+    (acc, species) => (species.diet.includes("funghi") ? acc + 1 : acc),
     0
   );
   const trimmedSequence = [...sequence]
@@ -65,39 +47,6 @@ const Overview: React.FC<OverviewProps> = ({
     trimmedSequence.length < lastSeconds / resolution
       ? [...Array(lastSeconds - trimmedSequence.length), ...trimmedSequence]
       : trimmedSequence;
-
-  const sortSpecies = (
-    a: GetData_iteration_procreation_species_edges,
-    b: GetData_iteration_procreation_species_edges
-  ) => {
-    let result = 1;
-    if (sortBy.col === "cells") {
-      result = a.node.cells.count > b.node.cells.count ? 1 : -1;
-    } else {
-      result = a.node[sortBy.col] > b.node[sortBy.col] ? 1 : -1;
-    }
-    if (!sortBy.asc) {
-      return -result;
-    }
-
-    return result;
-  };
-
-  const handleSort = (
-    sort: keyof GetData_iteration_procreation_species_edges_node
-  ) => {
-    if (sortBy.col === sort) {
-      setSortBy((prev) => ({
-        ...prev,
-        asc: !prev.asc,
-      }));
-    } else {
-      setSortBy({
-        asc: true,
-        col: sort,
-      });
-    }
-  };
 
   return (
     <div className={classes.root}>
@@ -180,7 +129,7 @@ const Overview: React.FC<OverviewProps> = ({
                 <tr>
                   <td>All</td>
                   <td className={classes.colValue}>
-                    {data.procreation.species.count}
+                    {data.procreation.species.length}
                   </td>
                 </tr>
               </table>
@@ -253,90 +202,13 @@ const Overview: React.FC<OverviewProps> = ({
             </LineChart>
           </Card>
           <div />
-          <Card header="Species" className={classes.species}>
-            <table className={classes.speciesTable}>
-              <colgroup>
-                <col className={classes.colName} />
-                <col className={classes.colHerbivore} />
-                <col className={classes.colCarnivore} />
-                <col className={classes.colFunghi} />
-                <col className={classes.colSpecimens} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th
-                    className={clsx(classes.colHeader, classes.colName, {
-                      [classes.colActive]: sortBy.col === "id",
-                    })}
-                    onClick={() => handleSort("id")}
-                  >
-                    ID
-                  </th>
-                  <th
-                    className={clsx(classes.colHeader, classes.colHerbivore, {
-                      [classes.colActive]: sortBy.col === "herbivore",
-                    })}
-                    onClick={() => handleSort("herbivore")}
-                  >
-                    Herbivore
-                  </th>
-                  <th
-                    className={clsx(classes.colHeader, classes.colCarnivore, {
-                      [classes.colActive]: sortBy.col === "carnivore",
-                    })}
-                    onClick={() => handleSort("carnivore")}
-                  >
-                    Carnivore
-                  </th>
-                  <th
-                    className={clsx(classes.colHeader, classes.colFunghi, {
-                      [classes.colActive]: sortBy.col === "funghi",
-                    })}
-                    onClick={() => handleSort("funghi")}
-                  >
-                    Funghi
-                  </th>
-                  <th
-                    className={clsx(classes.colHeader, classes.colSpecimens, {
-                      [classes.colActive]: sortBy.col === "cells",
-                    })}
-                    onClick={() => handleSort("cells")}
-                  >
-                    Specimens
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {uniqBy(data.procreation.species.edges, "node.id")
-                  .sort(sortSpecies)
-                  .map((species) => (
-                    <tr key={species.node.id}>
-                      <td className={classes.colName}>{species.node.id}</td>
-                      <td className={classes.colHerbivore}>
-                        {species.node.herbivore}
-                      </td>
-                      <td className={classes.colCarnivore}>
-                        {species.node.carnivore}
-                      </td>
-                      <td className={classes.colFunghi}>
-                        {species.node.funghi}
-                      </td>
-                      <td className={classes.colSpecimens}>
-                        {species.node.cells.count}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </Card>
-          <div />
           <Card header="Map" className={classes.map}>
             <Map
               area={area}
               grid={grid}
               selectedArea={selectedArea}
               setSelectedArea={setSelectedArea}
-              species={data.procreation.species.edges.map((edge) => edge.node)}
+              species={data.procreation.species}
             />
           </Card>
         </div>

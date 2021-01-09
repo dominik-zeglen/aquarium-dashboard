@@ -9,36 +9,30 @@ import { AreaInput } from "./../../gqlTypes/globalTypes";
 // GraphQL query operation: GetData
 // ====================================================
 
-export interface GetData_iteration_procreation_species_edges_node_cells {
-  __typename: "CellConnection";
-  count: number;
-}
-
-export interface GetData_iteration_procreation_species_edges_node {
-  __typename: "Species";
-  carnivore: number;
-  funghi: number;
-  herbivore: number;
+export interface GetData_iteration_procreation_species_organisms {
+  __typename: "Organism";
   id: number;
-  cells: GetData_iteration_procreation_species_edges_node_cells;
 }
 
-export interface GetData_iteration_procreation_species_edges {
-  __typename: "SpeciesConnectionEdge";
-  node: GetData_iteration_procreation_species_edges_node;
+export interface GetData_iteration_procreation_species_cellTypes {
+  __typename: "CellType";
+  id: number;
+  diet: string[];
 }
 
 export interface GetData_iteration_procreation_species {
-  __typename: "SpeciesConnection";
-  count: number;
-  edges: GetData_iteration_procreation_species_edges[];
+  __typename: "Species";
+  id: number;
+  organisms: GetData_iteration_procreation_species_organisms[];
+  cellTypes: GetData_iteration_procreation_species_cellTypes[];
+  diet: string[];
 }
 
 export interface GetData_iteration_procreation {
   __typename: "IterationProcreation";
   maxHeight: number;
   minHeight: number;
-  species: GetData_iteration_procreation_species;
+  species: GetData_iteration_procreation_species[];
 }
 
 export interface GetData_iteration_waste {
@@ -73,37 +67,48 @@ export interface GetData_speciesGrid {
   species: GetData_speciesGrid_species[];
 }
 
-export interface GetData_cellList_edges_node_position {
+export interface GetData_organismList_cells_type {
+  __typename: "CellType";
+  id: number;
+}
+
+export interface GetData_organismList_cells_position {
   __typename: "Point";
   x: number;
   y: number;
 }
 
-export interface GetData_cellList_edges_node_species {
+export interface GetData_organismList_cells {
+  __typename: "Cell";
+  id: number;
+  type: GetData_organismList_cells_type;
+  position: GetData_organismList_cells_position;
+}
+
+export interface GetData_organismList_position {
+  __typename: "Point";
+  x: number;
+  y: number;
+}
+
+export interface GetData_organismList_species {
   __typename: "Species";
   id: number;
 }
 
-export interface GetData_cellList_edges_node {
-  __typename: "Cell";
-  position: GetData_cellList_edges_node_position;
-  species: GetData_cellList_edges_node_species;
-}
-
-export interface GetData_cellList_edges {
-  __typename: "CellConnectionEdge";
-  node: GetData_cellList_edges_node;
-}
-
-export interface GetData_cellList {
-  __typename: "CellConnection";
-  edges: GetData_cellList_edges[];
+export interface GetData_organismList {
+  __typename: "Organism";
+  id: number;
+  bornAt: number;
+  cells: GetData_organismList_cells[];
+  position: GetData_organismList_position;
+  species: GetData_organismList_species;
 }
 
 export interface GetData {
   iteration: GetData_iteration;
   speciesGrid: GetData_speciesGrid[];
-  cellList: GetData_cellList;
+  organismList: GetData_organismList[];
 }
 
 export interface GetDataVariables {

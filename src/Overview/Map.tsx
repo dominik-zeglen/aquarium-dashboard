@@ -1,28 +1,28 @@
 import React from "react";
 import { AreaInput, PointInput } from "../../gqlTypes/globalTypes";
-import { Area_cellList_edges_node, Area_speciesGrid } from "../gqlTypes/Area";
-import { GetData_iteration_procreation_species_edges_node } from "../gqlTypes/GetData";
+import {} from "../gqlTypes/Area";
+import {
+  GetData_iteration_procreation_species,
+  GetData_organismList,
+  GetData_speciesGrid,
+} from "../gqlTypes/GetData";
 import classes from "./styles.module.css";
 
 export interface MapProps {
-  area: Area_cellList_edges_node[];
-  grid: Area_speciesGrid[];
+  area: GetData_organismList[];
+  grid: GetData_speciesGrid[];
   selectedArea: AreaInput;
   setSelectedArea: (area: AreaInput) => void;
-  species: GetData_iteration_procreation_species_edges_node[];
+  species: GetData_iteration_procreation_species[];
 }
 
-function getPixelColorHex(
-  s: GetData_iteration_procreation_species_edges_node
-): number {
+function getPixelColorHex(diet: string[]): number {
   let pixel = 0x0;
-  if (s.carnivore > 0) {
-    pixel |= 0xaa0000;
-  }
-  if (s.herbivore > 0) {
+
+  if (diet.includes("herbivore")) {
     pixel |= 0x00aa00;
   }
-  if (s.funghi > 0) {
+  if (diet.includes("funghi")) {
     pixel |= 0x0000aa;
   }
 
@@ -64,7 +64,7 @@ const Map: React.FC<MapProps> = ({
       );
 
       let color = gridSpecies.reduce(
-        (pixel, s) => pixel | getPixelColorHex(s),
+        (pixel, s) => pixel | getPixelColorHex(s.diet),
         0x0
       );
 
@@ -84,42 +84,39 @@ const Map: React.FC<MapProps> = ({
   };
 
   const drawArea = (ctx: CanvasRenderingContext2D) => {
-    const sortedArea = area
-      .map((cell) => {
-        const cellSpecies = species.find((s) => s.id === cell.species.id);
+    area.forEach((organism) => {
+      organism.cells.forEach((cell) => {
+        const organismSpecies = species.find(
+          (s) => s.id === organism.species.id
+        );
+        const cellType = organismSpecies?.cellTypes.find(
+          (ct) => ct.id == cell.type.id
+        );
+        ctx.strokeStyle = cellType
+          ? getColorFromHex(getPixelColorHex(cellType.diet))
+          : "#000000";
+        const x = organism.position.x + cell.position.x;
+        const y = organism.position.y + cell.position.y;
 
-        return {
-          ...cell,
-          color: cellSpecies
-            ? getColorFromHex(getPixelColorHex(cellSpecies))
-            : "#000000",
-        };
-      })
-      .sort((a, b) => (a.color > b.color ? 1 : -1));
-
-    sortedArea.forEach((cell) => {
-      if (ctx.strokeStyle !== cell.color) {
-        ctx.strokeStyle = cell.color;
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(
-        (cell.position.x - selectedArea.start.x) / 2 - 2,
-        (cell.position.y - selectedArea.start.y) / 2 - 2
-      );
-      ctx.lineTo(
-        (cell.position.x - selectedArea.start.x) / 2 + 2,
-        (cell.position.y - selectedArea.start.y) / 2 + 2
-      );
-      ctx.moveTo(
-        (cell.position.x - selectedArea.start.x) / 2 - 2,
-        (cell.position.y - selectedArea.start.y) / 2 + 2
-      );
-      ctx.lineTo(
-        (cell.position.x - selectedArea.start.x) / 2 + 2,
-        (cell.position.y - selectedArea.start.y) / 2 - 2
-      );
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(
+          (x - selectedArea.start.x) / 2 - 2,
+          (y - selectedArea.start.y) / 2 - 2
+        );
+        ctx.lineTo(
+          (x - selectedArea.start.x) / 2 + 2,
+          (y - selectedArea.start.y) / 2 + 2
+        );
+        ctx.moveTo(
+          (x - selectedArea.start.x) / 2 - 2,
+          (y - selectedArea.start.y) / 2 + 2
+        );
+        ctx.lineTo(
+          (x - selectedArea.start.x) / 2 + 2,
+          (y - selectedArea.start.y) / 2 - 2
+        );
+        ctx.stroke();
+      });
     });
   };
 

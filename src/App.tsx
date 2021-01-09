@@ -22,18 +22,15 @@ const query = gql`
         maxHeight
         minHeight
         species {
-          count
-          edges {
-            node {
-              carnivore
-              funghi
-              herbivore
-              id
-              cells {
-                count
-              }
-            }
+          id
+          organisms {
+            id
           }
+          cellTypes {
+            id
+            diet
+          }
+          diet
         }
       }
       waste {
@@ -54,17 +51,25 @@ const query = gql`
       }
     }
 
-    cellList(filter: { area: $area }) {
-      edges {
-        node {
-          position {
-            x
-            y
-          }
-          species {
-            id
-          }
+    organismList(filter: { area: $area }) {
+      id
+      bornAt
+      cells {
+        id
+        type {
+          id
         }
+        position {
+          x
+          y
+        }
+      }
+      position {
+        x
+        y
+      }
+      species {
+        id
       }
     }
   }
@@ -94,6 +99,12 @@ const App: React.FC = () => {
     apiInterval.current = (setInterval(async () => {
       try {
         const response = await data.refetch();
+        const title = document.querySelector("title");
+
+        if (title) {
+          title.innerHTML = `Iteration ${response.data.iteration.number}`;
+        }
+
         setDataSequence((prev) => {
           const newData = [
             ...prev,
@@ -123,7 +134,7 @@ const App: React.FC = () => {
         <>
           <Env data={data.data?.iteration} />
           <Overview
-            area={data.data?.cellList.edges.map((edge) => edge.node)}
+            area={data.data?.organismList}
             data={data.data?.iteration}
             grid={data.data?.speciesGrid}
             selectedArea={selectedArea}
