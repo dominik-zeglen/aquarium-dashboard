@@ -23,9 +23,6 @@ const query = gql`
         minHeight
         species {
           id
-          organisms {
-            id
-          }
           cellTypes {
             id
             diet
