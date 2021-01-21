@@ -13,7 +13,7 @@ import {
 import { AreaInput } from "../gqlTypes/globalTypes";
 
 const query = gql`
-  query GetData($area: AreaInput!) {
+  query GetData($area: AreaInput!, $id: Int!) {
     iteration {
       number
       aliveCellCount
@@ -69,6 +69,14 @@ const query = gql`
         id
       }
     }
+
+    organism(id: $id) {
+      id
+      bornAt
+      species {
+        id
+      }
+    }
   }
 `;
 
@@ -85,10 +93,12 @@ const App: React.FC = () => {
     end: { x: 1000, y: 1000 },
     start: { x: 0, y: 0 },
   });
+  const [id, setId] = React.useState(0);
   const data = useQuery<GetData, GetDataVariables>(query, {
     fetchPolicy: "no-cache",
     variables: {
       area: selectedArea,
+      id,
     },
   });
 
@@ -134,9 +144,11 @@ const App: React.FC = () => {
             area={data.data?.organismList}
             data={data.data?.iteration}
             grid={data.data?.speciesGrid}
+            selectedOrganismId={id}
             selectedArea={selectedArea}
             setSelectedArea={setSelectedArea}
             sequence={dataSequence}
+            onCellClick={setId}
           />
         </>
       )}

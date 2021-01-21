@@ -14,7 +14,9 @@ export interface OverviewProps {
   data: GetData_iteration;
   sequence: APIDataSequence[];
   selectedArea: AreaInput;
+  selectedOrganismId: number;
   setSelectedArea: (area: AreaInput) => void;
+  onCellClick: (id: number) => void;
 }
 
 const Overview: React.FC<OverviewProps> = ({
@@ -23,7 +25,9 @@ const Overview: React.FC<OverviewProps> = ({
   data,
   sequence,
   selectedArea,
+  selectedOrganismId,
   setSelectedArea,
+  onCellClick,
 }) => {
   const [resolution, setResolution] = React.useState(1);
 
@@ -47,6 +51,11 @@ const Overview: React.FC<OverviewProps> = ({
     trimmedSequence.length < lastSeconds / resolution
       ? [...Array(lastSeconds - trimmedSequence.length), ...trimmedSequence]
       : trimmedSequence;
+
+  const selectedOrganism = area.find((o) => o.id === selectedOrganismId);
+  const selectedOrganismSpecies = data.procreation.species.find(
+    (s) => selectedOrganism?.species.id === s.id
+  );
 
   return (
     <div className={classes.root}>
@@ -201,14 +210,57 @@ const Overview: React.FC<OverviewProps> = ({
               />
             </LineChart>
           </Card>
-          <div />
+          <div>
+            {selectedOrganism && (
+              <Card header="Selected Organism">
+                <table>
+                  <colgroup>
+                    <col className={classes.colName} />
+                    <col className={classes.colValue} />
+                  </colgroup>
+                  <tr>
+                    <td>ID</td>
+                    <td className={classes.colValue}>{selectedOrganism.id}</td>
+                  </tr>
+                  <tr>
+                    <td>Born</td>
+                    <td className={classes.colValue}>
+                      {data.number - selectedOrganism.bornAt} ago
+                    </td>
+                  </tr>
+                </table>
+                <hr />
+                Cells
+                <table>
+                  <colgroup>
+                    <col className={classes.colName} />
+                    <col className={classes.colValue} />
+                  </colgroup>
+                  {selectedOrganism.cells.map((cell) => (
+                    <>
+                      <tr>
+                        <td>ID</td>
+                        <td className={classes.colValue}>{cell.id}</td>
+                      </tr>
+                      <tr>
+                        <td>Cell Type ID</td>
+                        <td className={classes.colValue}>{cell.type.id}</td>
+                      </tr>
+                    </>
+                  ))}
+                </table>
+              </Card>
+            )}
+          </div>
           <Card header="Map" className={classes.map}>
             <Map
               area={area}
               grid={grid}
               selectedArea={selectedArea}
+              selectedOrganismId={selectedOrganismId}
               setSelectedArea={setSelectedArea}
               species={data.procreation.species}
+              onCellClick={onCellClick}
             />
           </Card>
         </div>

@@ -9,11 +9,6 @@ import { AreaInput } from "./../../gqlTypes/globalTypes";
 // GraphQL query operation: GetData
 // ====================================================
 
-export interface GetData_iteration_procreation_species_organisms {
-  __typename: "Organism";
-  id: number;
-}
-
 export interface GetData_iteration_procreation_species_cellTypes {
   __typename: "CellType";
   id: number;
@@ -23,7 +18,6 @@ export interface GetData_iteration_procreation_species_cellTypes {
 export interface GetData_iteration_procreation_species {
   __typename: "Species";
   id: number;
-  organisms: GetData_iteration_procreation_species_organisms[];
   cellTypes: GetData_iteration_procreation_species_cellTypes[];
   diet: string[];
 }
@@ -105,12 +99,26 @@ export interface GetData_organismList {
   species: GetData_organismList_species;
 }
 
+export interface GetData_organism_species {
+  __typename: "Species";
+  id: number;
+}
+
+export interface GetData_organism {
+  __typename: "Organism";
+  id: number;
+  bornAt: number;
+  species: GetData_organism_species;
+}
+
 export interface GetData {
   iteration: GetData_iteration;
   speciesGrid: GetData_speciesGrid[];
   organismList: GetData_organismList[];
+  organism: GetData_organism | null;
 }
 
 export interface GetDataVariables {
   area: AreaInput;
+  id: number;
 }

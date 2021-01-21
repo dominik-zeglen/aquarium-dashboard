@@ -12,8 +12,10 @@ export interface MapProps {
   area: GetData_organismList[];
   grid: GetData_speciesGrid[];
   selectedArea: AreaInput;
+  selectedOrganismId: number;
   setSelectedArea: (area: AreaInput) => void;
   species: GetData_iteration_procreation_species[];
+  onCellClick: (id: number) => void;
 }
 
 function getPixelColorHex(diet: string[]): number {
@@ -40,12 +42,33 @@ function getColorFromHex(hex: number): string {
   return "#" + colorStr;
 }
 
+function getDistanceInDimension(a: number, b: number): number {
+  return (a - b) * (a - b);
+}
+
+function findInArea(
+  point: PointInput,
+  selectedArea: PointInput,
+  organisms: GetData_organismList[]
+): GetData_organismList {
+  return organisms
+    .map((o) => ({
+      ...o,
+      distance:
+        getDistanceInDimension(point.x, (o.position.x - selectedArea.x) / 2) +
+        getDistanceInDimension(point.y, (o.position.y - selectedArea.y) / 2),
+    }))
+    .sort((a, b) => (a.distance > b.distance ? 1 : -1))[0];
+}
+
 const Map: React.FC<MapProps> = ({
   area,
   grid,
   species,
   selectedArea,
+  selectedOrganismId,
   setSelectedArea,
+  onCellClick,
 }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
@@ -120,6 +143,24 @@ const Map: React.FC<MapProps> = ({
     });
   };
 
+  const drawSelected = (ctx: CanvasRenderingContext2D) => {
+    const selectedOrganism = area.find((o) => o.id === selectedOrganismId);
+
+    if (selectedOrganism) {
+      ctx.strokeStyle = "#c7c7c7";
+      ctx.beginPath();
+      ctx.arc(
+        (selectedOrganism.position.x - selectedArea.start.x) / 2,
+        (selectedOrganism.position.y - selectedArea.start.y) / 2,
+        7,
+        0,
+        2 * Math.PI
+      );
+      ctx.stroke();
+      ctx.closePath();
+    }
+  };
+
   const draw = (ctx: CanvasRenderingContext2D) => {
     ctx.beginPath();
     ctx.lineWidth = 1;
@@ -129,6 +170,7 @@ const Map: React.FC<MapProps> = ({
 
     drawArea(ctx);
     drawMiniMap(ctx);
+    drawSelected(ctx);
   };
 
   React.useEffect(() => {
@@ -169,6 +211,8 @@ const Map: React.FC<MapProps> = ({
           y: (point.y - 5 - 400) * 100,
         },
       });
+    } else {
+      onCellClick(findInArea(point, selectedArea.start, area).id);
     }
   };
 
