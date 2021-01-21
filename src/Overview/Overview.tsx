@@ -53,9 +53,6 @@ const Overview: React.FC<OverviewProps> = ({
       : trimmedSequence;
 
   const selectedOrganism = area.find((o) => o.id === selectedOrganismId);
-  const selectedOrganismSpecies = data.procreation.species.find(
-    (s) => selectedOrganism?.species.id === s.id
-  );
 
   return (
     <div className={classes.root}>
