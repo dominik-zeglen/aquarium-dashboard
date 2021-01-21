@@ -36,16 +36,13 @@ const query = gql`
         toxicity
       }
     }
-    speciesGrid(
-      area: { start: { x: 0, y: 0 }, end: { x: 1e5, y: 1e5 }, scale: 100 }
-    ) {
+
+    miniMap {
       position {
         x
         y
       }
-      species {
-        id
-      }
+      diets
     }
 
     organismList(filter: { area: $area }) {
@@ -143,7 +140,7 @@ const App: React.FC = () => {
           <Overview
             area={data.data?.organismList}
             data={data.data?.iteration}
-            grid={data.data?.speciesGrid}
+            grid={data.data?.miniMap}
             selectedOrganismId={id}
             selectedArea={selectedArea}
             setSelectedArea={setSelectedArea}

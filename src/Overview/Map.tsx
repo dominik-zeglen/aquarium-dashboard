@@ -4,13 +4,13 @@ import {} from "../gqlTypes/Area";
 import {
   GetData_iteration_procreation_species,
   GetData_organismList,
-  GetData_speciesGrid,
+  GetData_miniMap,
 } from "../gqlTypes/GetData";
 import classes from "./styles.module.css";
 
 export interface MapProps {
   area: GetData_organismList[];
-  grid: GetData_speciesGrid[];
+  grid: GetData_miniMap[];
   selectedArea: AreaInput;
   selectedOrganismId: number;
   setSelectedArea: (area: AreaInput) => void;
@@ -82,14 +82,7 @@ const Map: React.FC<MapProps> = ({
     ctx.stroke();
 
     grid.forEach((block) => {
-      const gridSpecies = species.filter((s) =>
-        block.species.map((sp) => sp.id).includes(s.id)
-      );
-
-      let color = gridSpecies.reduce(
-        (pixel, s) => pixel | getPixelColorHex(s.diet),
-        0x0
-      );
+      const color = getPixelColorHex(block.diets);
 
       ctx.fillStyle = getColorFromHex(color);
       ctx.fillRect(400 + block.position.x, 400 + block.position.y, 1, 1);

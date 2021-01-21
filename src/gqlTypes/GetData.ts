@@ -44,21 +44,16 @@ export interface GetData_iteration {
   waste: GetData_iteration_waste;
 }
 
-export interface GetData_speciesGrid_position {
+export interface GetData_miniMap_position {
   __typename: "Point";
   x: number;
   y: number;
 }
 
-export interface GetData_speciesGrid_species {
-  __typename: "Species";
-  id: number;
-}
-
-export interface GetData_speciesGrid {
-  __typename: "SpeciesGridElement";
-  position: GetData_speciesGrid_position;
-  species: GetData_speciesGrid_species[];
+export interface GetData_miniMap {
+  __typename: "MiniMapPixel";
+  position: GetData_miniMap_position;
+  diets: string[];
 }
 
 export interface GetData_organismList_cells_type {
@@ -113,7 +108,7 @@ export interface GetData_organism {
 
 export interface GetData {
   iteration: GetData_iteration;
-  speciesGrid: GetData_speciesGrid[];
+  miniMap: GetData_miniMap[];
   organismList: GetData_organismList[];
   organism: GetData_organism | null;
 }

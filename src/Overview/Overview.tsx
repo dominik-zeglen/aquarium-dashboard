@@ -2,15 +2,18 @@ import classes from "./styles.module.css";
 import React from "react";
 import Card from "../Card/Card";
 import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
-import { GetData_iteration, GetData_organismList } from "../gqlTypes/GetData";
+import {
+  GetData_iteration,
+  GetData_miniMap,
+  GetData_organismList,
+} from "../gqlTypes/GetData";
 import { APIDataSequence } from "../App";
-import { Area_speciesGrid } from "../gqlTypes/Area";
 import Map from "./Map";
 import { AreaInput } from "../../gqlTypes/globalTypes";
 
 export interface OverviewProps {
   area: GetData_organismList[];
-  grid: Area_speciesGrid[];
+  grid: GetData_miniMap[];
   data: GetData_iteration;
   sequence: APIDataSequence[];
   selectedArea: AreaInput;
