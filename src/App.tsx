@@ -48,16 +48,6 @@ const query = gql`
     organismList(filter: { area: $area }) {
       id
       bornAt
-      cells {
-        id
-        type {
-          id
-        }
-        position {
-          x
-          y
-        }
-      }
       position {
         x
         y
@@ -70,6 +60,17 @@ const query = gql`
     organism(id: $id) {
       id
       bornAt
+      cells {
+        id
+        alive
+        type {
+          id
+        }
+        position {
+          x
+          y
+        }
+      }
       species {
         id
       }
@@ -141,6 +142,7 @@ const App: React.FC = () => {
             area={data.data?.organismList}
             data={data.data?.iteration}
             grid={data.data?.miniMap}
+            selectedOrganism={data.data?.organism}
             selectedOrganismId={id}
             selectedArea={selectedArea}
             setSelectedArea={setSelectedArea}

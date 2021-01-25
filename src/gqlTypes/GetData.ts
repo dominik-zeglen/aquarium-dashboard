@@ -56,24 +56,6 @@ export interface GetData_miniMap {
   diets: string[];
 }
 
-export interface GetData_organismList_cells_type {
-  __typename: "CellType";
-  id: number;
-}
-
-export interface GetData_organismList_cells_position {
-  __typename: "Point";
-  x: number;
-  y: number;
-}
-
-export interface GetData_organismList_cells {
-  __typename: "Cell";
-  id: number;
-  type: GetData_organismList_cells_type;
-  position: GetData_organismList_cells_position;
-}
-
 export interface GetData_organismList_position {
   __typename: "Point";
   x: number;
@@ -89,9 +71,27 @@ export interface GetData_organismList {
   __typename: "Organism";
   id: number;
   bornAt: number;
-  cells: GetData_organismList_cells[];
   position: GetData_organismList_position;
   species: GetData_organismList_species;
+}
+
+export interface GetData_organism_cells_type {
+  __typename: "CellType";
+  id: number;
+}
+
+export interface GetData_organism_cells_position {
+  __typename: "Point";
+  x: number;
+  y: number;
+}
+
+export interface GetData_organism_cells {
+  __typename: "Cell";
+  id: number;
+  alive: boolean;
+  type: GetData_organism_cells_type;
+  position: GetData_organism_cells_position;
 }
 
 export interface GetData_organism_species {
@@ -103,6 +103,7 @@ export interface GetData_organism {
   __typename: "Organism";
   id: number;
   bornAt: number;
+  cells: GetData_organism_cells[];
   species: GetData_organism_species;
 }
 

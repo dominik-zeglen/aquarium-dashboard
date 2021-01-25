@@ -7,6 +7,12 @@ import {
   GetData_miniMap,
 } from "../gqlTypes/GetData";
 import classes from "./styles.module.css";
+import {
+  drawCell,
+  getColorFromHex,
+  getDistanceInDimension,
+  getPixelColorHex,
+} from "./utils";
 
 export interface MapProps {
   area: GetData_organismList[];
@@ -16,34 +22,6 @@ export interface MapProps {
   setSelectedArea: (area: AreaInput) => void;
   species: GetData_iteration_procreation_species[];
   onCellClick: (id: number) => void;
-}
-
-function getPixelColorHex(diet: string[]): number {
-  let pixel = 0x0;
-
-  if (diet.includes("herbivore")) {
-    pixel |= 0x00aa00;
-  }
-  if (diet.includes("funghi")) {
-    pixel |= 0x0000aa;
-  }
-
-  return pixel;
-}
-function getColorFromHex(hex: number): string {
-  let colorStr = hex.toString(16);
-  if (colorStr.length < 6) {
-    colorStr =
-      Array(6 - colorStr.length)
-        .fill(0)
-        .reduce((acc, v) => acc + v, "") + colorStr;
-  }
-
-  return "#" + colorStr;
-}
-
-function getDistanceInDimension(a: number, b: number): number {
-  return (a - b) * (a - b);
 }
 
 function findInArea(
@@ -101,38 +79,16 @@ const Map: React.FC<MapProps> = ({
 
   const drawArea = (ctx: CanvasRenderingContext2D) => {
     area.forEach((organism) => {
-      organism.cells.forEach((cell) => {
-        const organismSpecies = species.find(
-          (s) => s.id === organism.species.id
-        );
-        const cellType = organismSpecies?.cellTypes.find(
-          (ct) => ct.id === cell.type.id
-        );
-        ctx.strokeStyle = cellType
-          ? getColorFromHex(getPixelColorHex(cellType.diet))
-          : "#000000";
-        const x = organism.position.x + cell.position.x;
-        const y = organism.position.y + cell.position.y;
+      const organismSpecies = species.find((s) => s.id === organism.species.id);
+      ctx.strokeStyle = organismSpecies
+        ? getColorFromHex(getPixelColorHex(organismSpecies.diet))
+        : "#000000";
 
-        ctx.beginPath();
-        ctx.moveTo(
-          (x - selectedArea.start.x) / 2 - 2,
-          (y - selectedArea.start.y) / 2 - 2
-        );
-        ctx.lineTo(
-          (x - selectedArea.start.x) / 2 + 2,
-          (y - selectedArea.start.y) / 2 + 2
-        );
-        ctx.moveTo(
-          (x - selectedArea.start.x) / 2 - 2,
-          (y - selectedArea.start.y) / 2 + 2
-        );
-        ctx.lineTo(
-          (x - selectedArea.start.x) / 2 + 2,
-          (y - selectedArea.start.y) / 2 - 2
-        );
-        ctx.stroke();
-      });
+      drawCell(
+        ctx,
+        (organism.position.x - selectedArea.start.x) / 2,
+        (organism.position.y - selectedArea.start.y) / 2
+      );
     });
   };
 

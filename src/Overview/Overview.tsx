@@ -5,11 +5,13 @@ import { LineChart, XAxis, YAxis, Line, CartesianGrid } from "recharts";
 import {
   GetData_iteration,
   GetData_miniMap,
+  GetData_organism,
   GetData_organismList,
 } from "../gqlTypes/GetData";
 import { APIDataSequence } from "../App";
 import Map from "./Map";
 import { AreaInput } from "../../gqlTypes/globalTypes";
+import OrganismModel from "./OrganismModel";
 
 export interface OverviewProps {
   area: GetData_organismList[];
@@ -17,6 +19,7 @@ export interface OverviewProps {
   data: GetData_iteration;
   sequence: APIDataSequence[];
   selectedArea: AreaInput;
+  selectedOrganism: GetData_organism | null;
   selectedOrganismId: number;
   setSelectedArea: (area: AreaInput) => void;
   onCellClick: (id: number) => void;
@@ -28,6 +31,7 @@ const Overview: React.FC<OverviewProps> = ({
   data,
   sequence,
   selectedArea,
+  selectedOrganism,
   selectedOrganismId,
   setSelectedArea,
   onCellClick,
@@ -54,8 +58,6 @@ const Overview: React.FC<OverviewProps> = ({
     trimmedSequence.length < lastSeconds / resolution
       ? [...Array(lastSeconds - trimmedSequence.length), ...trimmedSequence]
       : trimmedSequence;
-
-  const selectedOrganism = area.find((o) => o.id === selectedOrganismId);
 
   return (
     <div className={classes.root}>
@@ -229,6 +231,11 @@ const Overview: React.FC<OverviewProps> = ({
                     </td>
                   </tr>
                 </table>
+                <hr />
+                <OrganismModel
+                  organism={selectedOrganism}
+                  species={data.procreation.species}
+                />
                 <hr />
                 Cells
                 <table>
