@@ -87,7 +87,8 @@ const Map: React.FC<MapProps> = ({
       drawCell(
         ctx,
         (organism.position.x - selectedArea.start.x) / 2,
-        (organism.position.y - selectedArea.start.y) / 2
+        (organism.position.y - selectedArea.start.y) / 2,
+        organism.cells.length
       );
     });
   };

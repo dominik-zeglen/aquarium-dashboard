@@ -64,12 +64,14 @@ const OrganismModel: React.FC<OrganismModelProps> = ({ organism, species }) => {
   }, [organism]);
 
   return (
-    <canvas
-      className={classes.mapCanvas}
-      ref={canvasRef}
-      height={200}
-      width={200}
-    />
+    <>
+      <canvas
+        className={classes.mapCanvas}
+        ref={canvasRef}
+        height={200}
+        width={200}
+      />
+    </>
   );
 };
 

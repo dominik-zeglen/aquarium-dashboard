@@ -56,6 +56,11 @@ export interface GetData_miniMap {
   diets: string[];
 }
 
+export interface GetData_organismList_cells {
+  __typename: "Cell";
+  id: number;
+}
+
 export interface GetData_organismList_position {
   __typename: "Point";
   x: number;
@@ -71,6 +76,7 @@ export interface GetData_organismList {
   __typename: "Organism";
   id: number;
   bornAt: number;
+  cells: GetData_organismList_cells[];
   position: GetData_organismList_position;
   species: GetData_organismList_species;
 }

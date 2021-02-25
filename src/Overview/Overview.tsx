@@ -237,7 +237,7 @@ const Overview: React.FC<OverviewProps> = ({
                   species={data.procreation.species}
                 />
                 <hr />
-                Cells
+                {`Cells (${selectedOrganism.cells.length})`}
                 <table>
                   <colgroup>
                     <col className={classes.colName} />

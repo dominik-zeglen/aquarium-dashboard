@@ -26,11 +26,19 @@ export function getDistanceInDimension(a: number, b: number): number {
   return (a - b) * (a - b);
 }
 
-export function drawCell(ctx: CanvasRenderingContext2D, x: number, y: number) {
+export function drawCell(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  cells = 1
+) {
+  const scale = 1 + (cells - 1) / 24;
+  const step = 2 * scale;
+
   ctx.beginPath();
-  ctx.moveTo(x - 2, y - 2);
-  ctx.lineTo(x + 2, y + 2);
-  ctx.moveTo(x - 2, y + 2);
-  ctx.lineTo(x + 2, y - 2);
+  ctx.moveTo(x - step, y - step);
+  ctx.lineTo(x + step, y + step);
+  ctx.moveTo(x - step, y + step);
+  ctx.lineTo(x + step, y - step);
   ctx.stroke();
 }

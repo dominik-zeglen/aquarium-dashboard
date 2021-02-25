@@ -48,6 +48,9 @@ const query = gql`
     organismList(filter: { area: $area }) {
       id
       bornAt
+      cells {
+        id
+      }
       position {
         x
         y
